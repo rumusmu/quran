@@ -6,6 +6,7 @@ import { useTranslations } from '../translations';
 import { useSelector } from 'react-redux';
 import { selectCurrentSurah, selectSurahs } from '../store/slices/quranSlice';
 import { selectSearchLanguage } from '../store/slices/searchSlice';
+import { selectReadingType } from '../store/slices/uiSlice';
 
 interface VerseCardProps {
   verse: Verse;
@@ -14,15 +15,20 @@ interface VerseCardProps {
 export function VerseCard({ verse }: VerseCardProps) {
   const t = useTranslations();
   const language = useSelector(selectSearchLanguage);
+  const readingType = useSelector(selectReadingType);
   const [showTranslations, setShowTranslations] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const currentSurah = useSelector(selectCurrentSurah);
   const surahs = useSelector(selectSurahs);
 
   const selectedSurah = surahs.find((surah) => surah.id === currentSurah);
-
   const verseInfo = `${selectedSurah?.name}, Verse ${verse.verse_number}`;
   const verseText = `\n${verse.translation?.text || ''}`;
+
+  if (readingType === 'book') {
+    return null; 
+  }
+
 
   return (
     <>

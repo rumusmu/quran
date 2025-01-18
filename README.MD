@@ -42,7 +42,7 @@ Follow these steps to set up the project locally.
 Clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/0memo07/quran-web-app.git
+git clone https://github.com/0memo07/Quran-Web-Application.git
 ```
 
 ### 2. Install Dependencies
@@ -50,7 +50,7 @@ git clone https://github.com/0memo07/quran-web-app.git
 Navigate to the project folder and install the necessary dependencies:
 
 ```bash
-cd quran-web-app
+cd Quran-Web-Application
 ```
 ```bash
 npm install

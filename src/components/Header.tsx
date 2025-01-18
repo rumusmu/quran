@@ -6,6 +6,7 @@ import { setLanguage, selectSearchLanguage } from "../store/slices/searchSlice";
 import { SearchDialog } from "./SearchDialog";
 import { useTranslations } from "../translations";
 import * as Popover from "@radix-ui/react-popover";
+import { ReadingTypeSelector } from "./ReadingTypeSelector";
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -63,6 +64,7 @@ export function Header({
           </div>
 
           <div className="flex items-center gap-2">
+            <ReadingTypeSelector />
             <button
               onClick={() => setIsSearchOpen(true)}
               className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"

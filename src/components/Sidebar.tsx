@@ -1,27 +1,31 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { ChevronDown, PlayCircle, PauseCircle } from 'lucide-react';
-import { selectSurahs, setCurrentSurah, selectCurrentSurah } from '../store/slices/quranSlice';
+import { selectSurahs, setCurrentSurah, selectCurrentSurah, selectBookCurrentSurahId } from '../store/slices/quranSlice';
 import { selectAuthors, selectSelectedAuthor, setSelectedAuthor } from '../store/slices/translationsSlice';
 import { selectSearchLanguage } from '../store/slices/searchSlice';
 import { useTranslations } from '../translations';
-
+import { selectReadingType } from '../store/slices/uiSlice';
 export function Sidebar() {
   const dispatch = useDispatch();
+  const currentSurahId = useSelector(selectBookCurrentSurahId);
   const t = useTranslations();
+  const readingType = useSelector(selectReadingType);
   const language = useSelector(selectSearchLanguage);
   const surahs = useSelector(selectSurahs);
   const currentSurah = useSelector(selectCurrentSurah);
   const authors = useSelector(selectAuthors);
   const selectedAuthor = useSelector(selectSelectedAuthor);
 
-  const selectedSurah = surahs.find((surah) => surah.id === currentSurah);
+  const selectedSurah = readingType === 'book' 
+    ? surahs.find((surah) => surah.id === currentSurahId)
+    : surahs.find((surah) => surah.id === currentSurah);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const audioRef = useRef(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
   
   useEffect(() => {
     setCurrentTime(0); 
@@ -58,6 +62,8 @@ export function Sidebar() {
 
   const handlePlayPause = () => {
     const audioElement = audioRef.current;
+    if (!audioElement) return;
+    
     if (isPlaying) {
       audioElement.pause();
     } else {
@@ -66,14 +72,16 @@ export function Sidebar() {
     setIsPlaying(!isPlaying);
   };
 
-  const handleSeek = (e) => {
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const audioElement = audioRef.current;
-    const seekTime = (e.target.value / 100) * audioElement.duration;
+    if (!audioElement) return;
+    
+    const seekTime = (Number(e.target.value) / 100) * audioElement.duration;
     audioElement.currentTime = seekTime;
-    setProgress(e.target.value);
+    setProgress(Number(e.target.value));
   };
 
-  const formatTime = (time) => {
+  const formatTime = (time: number) => {
     if (isNaN(time) || time === 0) return "0:00";
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60).toString().padStart(2, "0");
@@ -84,25 +92,27 @@ export function Sidebar() {
     <div className="h-full relative">
       <div className="h-full overflow-y-auto bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-r border-gray-200/50 dark:border-gray-800/50 pb-20">
         <div className="p-6 space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-              {t.sidebar.selectSurah}
-            </label>
-            <div className="relative">
-              <select
-                value={currentSurah}
-                onChange={(e) => dispatch(setCurrentSurah(Number(e.target.value)))}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none appearance-none transition-all duration-200"
-              >
-                {surahs.map((surah) => (
-                  <option key={surah.id} value={surah.id}>
-                    {surah.id}. {surah.name_en} ({surah.name})
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
+          {readingType !== 'book' && (
+            <div>
+              <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                {t.sidebar.selectSurah}
+              </label>
+              <div className="relative">
+                <select
+                  value={currentSurah}
+                  onChange={(e) => dispatch(setCurrentSurah(Number(e.target.value)))}
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none appearance-none transition-all duration-200"
+                >
+                  {surahs.map((surah) => (
+                    <option key={surah.id} value={surah.id}>
+                      {surah.id}. {surah.name_en} ({surah.name})
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
+              </div>
             </div>
-          </div>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
@@ -210,7 +220,7 @@ export function Sidebar() {
                     ? selectedSurah.audio.mp3
                     : language === "en"
                     ? selectedSurah.audio.mp3_en
-                    : null 
+                    : undefined
                 }
                 preload="auto"
               />
