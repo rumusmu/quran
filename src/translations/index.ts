@@ -56,6 +56,15 @@ const translations = {
         retry: 'Retry',
         audioError: 'Failed to load audio',
         networkError: 'Network error. Please check your connection.'
+      },
+      settings: {
+        title: 'Text Settings',
+        fontSize: 'Font Size',
+        lineHeight: 'Line Height',
+        smaller: 'Smaller',
+        larger: 'Larger',
+        lineHeightTight: 'Tight',
+        lineHeightRelaxed: 'Relaxed'
       }
     }
   },
@@ -114,6 +123,15 @@ const translations = {
         retry: 'Tekrar dene',
         audioError: 'Ses yüklenemedi',
         networkError: 'Ağ hatası. Lütfen bağlantınızı kontrol edin.'
+      },
+      settings: {
+        title: 'Yazı Ayarları',
+        fontSize: 'Yazı Boyutu',
+        lineHeight: 'Satır Aralığı',
+        smaller: 'Küçült',
+        larger: 'Büyüt',
+        lineHeightTight: 'Sık',
+        lineHeightRelaxed: 'Rahat'
       }
     }
   }

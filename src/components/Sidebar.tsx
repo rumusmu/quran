@@ -6,6 +6,8 @@ import { selectAuthors, selectSelectedAuthor, setSelectedAuthor } from '../store
 import { selectSearchLanguage } from '../store/slices/searchSlice';
 import { useTranslations } from '../translations';
 import { selectReadingType } from '../store/slices/uiSlice';
+import { ReadingTypeSelector } from "./ReadingTypeSelector";
+
 export function Sidebar() {
   const dispatch = useDispatch();
   const currentSurahId = useSelector(selectBookCurrentSurahId);
@@ -171,6 +173,8 @@ export function Sidebar() {
               </div>
             </div>
           )}
+
+          <ReadingTypeSelector />
         </div>
       </div>
 
