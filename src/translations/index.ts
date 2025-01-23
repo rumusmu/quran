@@ -27,7 +27,8 @@ const translations = {
         surahAudio: 'Surah Audio',
         playAudio: 'Play audio',
         pauseAudio: 'Pause audio',
-        currentlyPlaying: 'Currently playing'
+        currentlyPlaying: 'Currently playing',
+        readingView: 'Reading View'
       },
       verse: {
         verse: 'Verse',
@@ -55,7 +56,10 @@ const translations = {
         loadingFailed: 'Failed to load content',
         retry: 'Retry',
         audioError: 'Failed to load audio',
-        networkError: 'Network error. Please check your connection.'
+        networkError: 'Network error. Please check your connection.',
+        pageNotFound: 'Page Not Found',
+        pageNotFoundDesc: "Sorry, we couldn't find the page you're looking for.",
+        backToHome: 'Back to Home'
       },
       settings: {
         title: 'Text Settings',
@@ -93,7 +97,8 @@ const translations = {
         surahAudio: 'Sure Sesi',
         playAudio: 'Sesi oynat',
         pauseAudio: 'Sesi duraklat',
-        currentlyPlaying: 'Şu an çalıyor'
+        currentlyPlaying: 'Şu an çalıyor',
+        readingView: 'Okuma Görünümü'
       },
       verse: {
         verse: 'Ayet',
@@ -122,7 +127,10 @@ const translations = {
         loadingFailed: 'İçerik yüklenemedi',
         retry: 'Tekrar dene',
         audioError: 'Ses yüklenemedi',
-        networkError: 'Ağ hatası. Lütfen bağlantınızı kontrol edin.'
+        networkError: 'Ağ hatası. Lütfen bağlantınızı kontrol edin.',
+        pageNotFound: 'Sayfa Bulunamadı',
+        pageNotFoundDesc: 'Üzgünüz, aradığınız sayfayı bulamadık.',
+        backToHome: 'Ana Sayfaya Dön'
       },
       settings: {
         title: 'Yazı Ayarları',

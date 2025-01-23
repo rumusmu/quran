@@ -11,9 +11,12 @@ import {
   selectSearchLanguage,
   selectRandomVerse,
 } from '../store/slices/searchSlice';
-import { setCurrentSurah } from '../store/slices/quranSlice';
+import { setCurrentSurah, setBookCurrentSurahId } from '../store/slices/quranSlice';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import { useTranslations } from '../translations';
+import { useNavigate } from 'react-router-dom';
+import { selectReadingType } from '../store/slices/uiSlice';
+import { selectSelectedAuthor } from '../store/slices/translationsSlice';
 
 interface SearchDialogProps {
   isOpen: boolean;
@@ -29,6 +32,9 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
   const language = useSelector(selectSearchLanguage);
   const randomVerse = useSelector(selectRandomVerse);
   const { isPlaying, currentAudioId, playAudio } = useAudioPlayer();
+  const navigate = useNavigate();
+  const readingType = useSelector(selectReadingType);
+  const selectedAuthor = useSelector(selectSelectedAuthor);
 
   useEffect(() => {
     if (!isOpen) {
@@ -40,20 +46,57 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       if (searchTerm.trim().length >= 2) {
-        dispatch(searchVerses({ searchTerm, language }));
+        dispatch(searchVerses({ searchTerm, language }) as any);
       }
     }, 300);
 
     return () => clearTimeout(debounceTimer);
   }, [searchTerm, language, dispatch]);
 
-  const handleVerseClick = (surahId: number) => {
-    dispatch(setCurrentSurah(surahId));
-    onClose();
+  const handleVerseClick = (surahId: number, verseNumber: number) => {
+    if (readingType === 'book') {
+      dispatch(setBookCurrentSurahId(surahId));
+      
+      onClose();
+
+      setTimeout(() => {
+        navigate(`/surah/${surahId}/verse/${verseNumber}`);
+        
+        setTimeout(() => {
+          const verseElement = document.querySelector(`[data-verse-id="${verseNumber}"][data-surah-id="${surahId}"]`);
+          if (verseElement) {
+            verseElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            verseElement.classList.add('bg-blue-50', 'dark:bg-blue-900/20');
+            setTimeout(() => {
+              verseElement.classList.remove('bg-blue-50', 'dark:bg-blue-900/20');
+            }, 2000);
+          }
+        }, 500);
+      }, 100);
+    } else {
+      dispatch(setCurrentSurah(surahId));
+      const url = selectedAuthor 
+        ? `/surah/${surahId}/verse/${verseNumber}/${selectedAuthor.id}`
+        : `/surah/${surahId}/verse/${verseNumber}`;
+      
+      onClose();
+      navigate(url);
+
+      setTimeout(() => {
+        const verseElement = document.querySelector(`[data-verse-id="${verseNumber}"]`);
+        if (verseElement) {
+          verseElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          verseElement.classList.add('bg-blue-50', 'dark:bg-blue-900/20');
+          setTimeout(() => {
+            verseElement.classList.remove('bg-blue-50', 'dark:bg-blue-900/20');
+          }, 2000);
+        }
+      }, 500);
+    }
   };
 
   const handleRandomVerse = () => {
-    dispatch(fetchRandomVerse(language));
+    dispatch(fetchRandomVerse(language) as any);
   };
 
   const handleAudioPlay = (audioUrl: string, id: number) => {
@@ -164,7 +207,7 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
               {searchResults.map((result) => (
                 <button
                   key={result.id}
-                  onClick={() => handleVerseClick(result.surah.id)}
+                  onClick={() => handleVerseClick(result.surah.id, result.verse.verse_number)}
                   className="w-full p-4 sm:p-6 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                 >
                   <div className="flex items-start gap-4">

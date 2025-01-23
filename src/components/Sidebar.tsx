@@ -7,9 +7,11 @@ import { selectSearchLanguage } from '../store/slices/searchSlice';
 import { useTranslations } from '../translations';
 import { selectReadingType } from '../store/slices/uiSlice';
 import { ReadingTypeSelector } from "./ReadingTypeSelector";
+import { useParams, useNavigate } from 'react-router-dom';
 
 export function Sidebar() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const currentSurahId = useSelector(selectBookCurrentSurahId);
   const t = useTranslations();
   const readingType = useSelector(selectReadingType);
@@ -18,6 +20,7 @@ export function Sidebar() {
   const currentSurah = useSelector(selectCurrentSurah);
   const authors = useSelector(selectAuthors);
   const selectedAuthor = useSelector(selectSelectedAuthor);
+  const { surahId, authorId } = useParams();
 
   const selectedSurah = readingType === 'book' 
     ? surahs.find((surah) => surah.id === currentSurahId)
@@ -62,6 +65,48 @@ export function Sidebar() {
     };
   }, []);
 
+  useEffect(() => {
+    if (readingType === 'card') {
+      if (surahId) {
+        dispatch(setCurrentSurah(Number(surahId)));
+      } else if (!currentSurah && surahs.length > 0) {
+        dispatch(setCurrentSurah(surahs[0].id));
+      }
+      
+      if (authorId) {
+        const author = authors.find(a => a.id === Number(authorId));
+        if (author) {
+          dispatch(setSelectedAuthor(author));
+        }
+      }
+    }
+  }, [surahId, authorId, readingType, authors, dispatch, currentSurah, surahs]);
+
+  const handleSurahChange = (surahId: number) => {
+    if (readingType === 'card') {
+      dispatch(setCurrentSurah(surahId));
+      const url = selectedAuthor 
+        ? `/surah/${surahId}/verse/1/${selectedAuthor.id}`
+        : `/surah/${surahId}/verse/1`;
+      navigate(url, { replace: true });
+    } else {
+      dispatch(setBookCurrentSurahId(surahId));
+      navigate(`/surah/${surahId}`, { replace: true });
+    }
+  };
+
+  const handleAuthorChange = (authorId: number) => {
+    const author = authors.find(a => a.id === Number(authorId));
+    dispatch(setSelectedAuthor(author || null));
+    
+    if (readingType === 'card' && currentSurah) {
+      const url = author 
+        ? `/surah/${currentSurah}/verse/1/${author.id}`
+        : `/surah/${currentSurah}`;
+      navigate(url, { replace: true });
+    }
+  };
+
   const handlePlayPause = () => {
     const audioElement = audioRef.current;
     if (!audioElement) return;
@@ -101,8 +146,8 @@ export function Sidebar() {
               </label>
               <div className="relative">
                 <select
-                  value={currentSurah}
-                  onChange={(e) => dispatch(setCurrentSurah(Number(e.target.value)))}
+                  value={currentSurah || ''}
+                  onChange={(e) => handleSurahChange(Number(e.target.value))}
                   className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none appearance-none transition-all duration-200"
                 >
                   {surahs.map((surah) => (
@@ -123,10 +168,7 @@ export function Sidebar() {
             <div className="relative">
               <select
                 value={selectedAuthor?.id || ''}
-                onChange={(e) => {
-                  const author = authors.find(a => a.id === Number(e.target.value));
-                  dispatch(setSelectedAuthor(author || null));
-                }}
+                onChange={(e) => handleAuthorChange(Number(e.target.value))}
                 className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none appearance-none transition-all duration-200"
               >
                 <option value="">{t.sidebar.defaultTranslation}</option>

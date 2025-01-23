@@ -1,21 +1,37 @@
 import React from 'react';
 import { Copy, Share, X } from 'lucide-react';
 import { useTranslations } from '../translations';
+import { useSelector } from 'react-redux';
+import { selectSelectedAuthor } from '../store/slices/translationsSlice';
 
 interface ShareMenuProps {
   isOpen: boolean;
   onClose: () => void;
   verseText: string;
   verseInfo: string;
+  verseLink: string;
 }
 
-export function ShareMenu({ isOpen, onClose, verseText, verseInfo }: ShareMenuProps) {
+export function ShareMenu({ isOpen, onClose, verseText, verseInfo, verseLink }: ShareMenuProps) {
   const t = useTranslations();
+  const selectedAuthor = useSelector(selectSelectedAuthor);
+
   if (!isOpen) return null;
+
+  // Eğer seçili bir çevirmen varsa URL'ye ekle
+  const fullVerseLink = selectedAuthor 
+    ? verseLink.includes('verse') 
+      ? verseLink.includes(selectedAuthor.id.toString())
+        ? verseLink
+        : `${verseLink}/${selectedAuthor.id}`
+      : `${verseLink}/verse/1/${selectedAuthor.id}`
+    : verseLink;
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(`${verseInfo}\n\n${verseText}`);
+      await navigator.clipboard.writeText(
+        `${verseInfo}\n\n${verseText}\n\n${window.location.origin}${fullVerseLink}`
+      );
       onClose();
     } catch (error) {
       console.error('Failed to copy:', error);
@@ -27,7 +43,7 @@ export function ShareMenu({ isOpen, onClose, verseText, verseInfo }: ShareMenuPr
       await navigator.share({
         title: verseInfo,
         text: verseText,
-        url: window.location.href,
+        url: `${window.location.origin}${fullVerseLink}`,
       });
       onClose();
     } catch (error) {

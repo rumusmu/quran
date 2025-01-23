@@ -2,17 +2,19 @@ import React from 'react';
 import { Book, AlignVerticalSpaceAround } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectReadingType, setReadingType } from '../store/slices/uiSlice';
+import { useTranslations } from '../translations/index';
 
 export type ReadingType = 'card' | 'book';
 
 export function ReadingTypeSelector() {
   const dispatch = useDispatch();
   const currentType = useSelector(selectReadingType);
+  const t = useTranslations();
 
   return (
     <div className="mb-6">
       <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-        Reading View
+        {t.sidebar.readingView}
       </label>
       <div className="flex items-center gap-2 p-1 bg-gray-100 dark:bg-gray-800 rounded-xl">
         <button

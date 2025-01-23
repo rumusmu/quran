@@ -16,7 +16,7 @@ interface QuranState {
 
 const initialState: QuranState = {
   surahs: [],
-  currentSurah: 1,
+  currentSurah: 0,
   currentSurahId: null,
   currentVerse: null,
   verses: [],

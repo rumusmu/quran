@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { searchQuran, getRandomVerse } from '../../api/quranApi';
 import type { RootState } from '../store';
 import type { SearchHit } from '../../api/types';
@@ -19,13 +19,14 @@ const initialState: SearchState = {
   language: localStorage.getItem('language') || 'en',
 };
 
-export const searchVerses = createAsyncThunk(
-  'search/searchVerses',
-  async ({ searchTerm, language }: { searchTerm: string; language: string }) => {
-    const response = await searchQuran(searchTerm, language);
-    return response.data.hits || [];
-  }
-);
+export const searchVerses = createAsyncThunk<
+  SearchHit[],
+  { searchTerm: string; language: string },
+  { rejectValue: string }
+>('search/searchVerses', async ({ searchTerm, language }) => {
+  const response = await searchQuran(searchTerm, language);
+  return response.data.hits || [];
+});
 
 export const fetchRandomVerse = createAsyncThunk(
   'search/fetchRandomVerse',

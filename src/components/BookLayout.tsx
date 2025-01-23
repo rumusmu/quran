@@ -5,6 +5,8 @@ import { selectSurahs } from '../store/slices/quranSlice';
 import { Verse } from '../api/types';
 import { useTranslations } from '../translations';
 import { selectBookCurrentSurahId, setBookCurrentSurahId  } from '../store/slices/quranSlice';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+
 interface BookLayoutProps {
   verses: Verse[];
 }
@@ -28,6 +30,9 @@ export const BookLayout: React.FC<BookLayoutProps> = ({ verses }) => {
   const [fontSize, setFontSize] = useState(16);
   const [lineHeight, setLineHeight] = useState(1.5);
   const [showSettings, setShowSettings] = useState(false);
+  const { surahId, verseId } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const totalPages = Math.max(...verses.map((verse) => verse.page));
   const currentPageVerses = verses.filter((verse) => verse.page === currentPage);
@@ -181,6 +186,53 @@ export const BookLayout: React.FC<BookLayoutProps> = ({ verses }) => {
     return surah?.name || t.sidebar.selectSurah;
   };
 
+  useEffect(() => {
+    if (surahId && verseId) {
+      const targetVerse = verses.find(
+        v => v.surah_id === Number(surahId) && v.verse_number === Number(verseId)
+      );
+      
+      if (targetVerse) {
+        setCurrentPage(targetVerse.page);
+        setInputPage(targetVerse.page.toString());
+        
+        setTimeout(() => {
+          const verseElement = document.querySelector(`[data-verse-id="${targetVerse.id}"]`);
+          if (verseElement) {
+            verseElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            verseElement.classList.add('bg-blue-50', 'dark:bg-blue-900/20');
+            setTimeout(() => {
+              verseElement.classList.remove('bg-blue-50', 'dark:bg-blue-900/20');
+            }, 2000);
+          }
+        }, 100);
+      }
+    } else if (surahId) {
+      const firstVerseOfSurah = verses.find(v => v.surah_id === Number(surahId));
+      if (firstVerseOfSurah) {
+        setCurrentPage(firstVerseOfSurah.page);
+        setInputPage(firstVerseOfSurah.page.toString());
+        window.scrollTo(0, 0);
+      }
+    }
+  }, [surahId, verseId, verses]);
+
+  // Sayfa veya sure değiştiğinde URL'yi kontrol et
+  useEffect(() => {
+    // Eğer şu an bir sure/ayet URL'indeyse
+    if (location.pathname.includes('/surah/')) {
+      const currentVerse = verses.find(
+        v => v.surah_id === Number(surahId) && v.verse_number === Number(verseId)
+      );
+
+      // Eğer mevcut sayfa veya sure, URL'deki sure/ayetten farklıysa
+      if (currentVerse?.page !== currentPage || currentVerse?.surah_id !== currentSurahId) {
+        // URL'yi temizle
+        navigate('/', { replace: true });
+      }
+    }
+  }, [currentPage, currentSurahId]);
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-2 sm:p-4">
       <div className="w-full max-w-4xl bg-white dark:bg-gray-800 rounded-lg shadow-lg">
@@ -291,102 +343,102 @@ export const BookLayout: React.FC<BookLayoutProps> = ({ verses }) => {
           <div className="p-2 sm:p-4">
             <div className="text-center mb-2 sm:mb-4">
               <h1 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100">
-                {getCurrentSurahName()}
-              </h1>
+              {getCurrentSurahName()}
+            </h1>
               <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                {t.verse.page} {currentPage} {t.verse.of} {totalPages}
-              </p>
-            </div>
+              {t.verse.page} {currentPage} {t.verse.of} {totalPages}
+            </p>
+          </div>
 
             <form onSubmit={handleSearch} className="flex flex-col sm:flex-row justify-center items-center gap-2 mb-4">
               <div className="flex gap-2 w-full sm:w-auto">
                 <div className="relative surah-dropdown flex-1 sm:flex-initial">
-                  <input
-                    type="text"
-                    value={searchSurah}
-                    onChange={(e) => {
-                      setSearchSurah(e.target.value);
-                      setShowSurahDropdown(true);
-                    }}
-                    onFocus={() => setShowSurahDropdown(true)}
-                    placeholder={t.sidebar.selectSurah}
-                    className="w-full surah-input px-2 sm:px-3 py-1 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-                  />
-                  {showSurahDropdown && (
-                    <div className="absolute top-full left-0 w-full mt-1 max-h-60 overflow-y-auto bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded shadow-lg z-50">
-                      {filteredSurahs.map((surah) => (
-                        <button
-                          key={surah.id}
-                          type="button"
-                          onClick={() => {
-                            setSearchSurah(surah.name);
-                            setShowSurahDropdown(false);
-                          }}
-                          className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200"
-                        >
-                          {surah.name}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <div className="relative verse-dropdown w-24 sm:w-20">
-                  <input
-                    type="text"
-                    value={searchVerse}
-                    onChange={(e) => setSearchVerse(e.target.value)}
-                    onFocus={() => setShowVerseDropdown(true)}
-                    placeholder={t.verse.verse}
-                    className="w-full verse-input px-2 sm:px-3 py-1 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-                  />
-                  {showVerseDropdown && availableVerses.length > 0 && (
-                    <div className="absolute top-full left-0 w-32 mt-1 max-h-60 overflow-y-auto bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded shadow-lg z-50">
-                      {availableVerses.map((verseNum) => (
-                        <button
-                          key={verseNum}
-                          type="button"
-                          onClick={() => {
-                            setSearchVerse(verseNum.toString());
-                            setShowVerseDropdown(false);
-                          }}
-                          className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200"
-                        >
-                          {verseNum}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                className="w-full sm:w-auto p-2 bg-gray-100 dark:bg-gray-700 rounded hover:bg-gray-200 dark:hover:bg-gray-600"
-              >
-                <Search className="w-4 h-4 sm:w-5 sm:h-5 mx-auto text-gray-700 dark:text-gray-300" />
-              </button>
-            </form>
-
-            <div className="flex justify-center items-center gap-2 sm:gap-4">
-              <button
-                onClick={handlePreviousPage}
-                disabled={currentPage === 0}
-                className="px-3 sm:px-4 py-1 sm:py-2 bg-gray-100 dark:bg-gray-700 rounded disabled:opacity-50"
-              >
-                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-gray-300" />
-              </button>
-
               <input
                 type="text"
-                value={inputPage}
-                onChange={handlePageChange}
-                className="w-12 sm:w-16 text-center px-1 sm:px-2 py-1 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+                value={searchSurah}
+                onChange={(e) => {
+                  setSearchSurah(e.target.value);
+                  setShowSurahDropdown(true);
+                }}
+                onFocus={() => setShowSurahDropdown(true)}
+                placeholder={t.sidebar.selectSurah}
+                    className="w-full surah-input px-2 sm:px-3 py-1 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
               />
+              {showSurahDropdown && (
+                <div className="absolute top-full left-0 w-full mt-1 max-h-60 overflow-y-auto bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded shadow-lg z-50">
+                  {filteredSurahs.map((surah) => (
+                    <button
+                      key={surah.id}
+                      type="button"
+                      onClick={() => {
+                        setSearchSurah(surah.name);
+                        setShowSurahDropdown(false);
+                      }}
+                      className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200"
+                    >
+                      {surah.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
-              <button
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages}
+                <div className="relative verse-dropdown w-24 sm:w-20">
+              <input
+                type="text"
+                value={searchVerse}
+                onChange={(e) => setSearchVerse(e.target.value)}
+                onFocus={() => setShowVerseDropdown(true)}
+                placeholder={t.verse.verse}
+                    className="w-full verse-input px-2 sm:px-3 py-1 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+              />
+              {showVerseDropdown && availableVerses.length > 0 && (
+                <div className="absolute top-full left-0 w-32 mt-1 max-h-60 overflow-y-auto bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded shadow-lg z-50">
+                  {availableVerses.map((verseNum) => (
+                    <button
+                      key={verseNum}
+                      type="button"
+                      onClick={() => {
+                        setSearchVerse(verseNum.toString());
+                        setShowVerseDropdown(false);
+                      }}
+                      className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200"
+                    >
+                      {verseNum}
+                    </button>
+                  ))}
+                </div>
+              )}
+                </div>
+            </div>
+
+            <button
+              type="submit"
+                className="w-full sm:w-auto p-2 bg-gray-100 dark:bg-gray-700 rounded hover:bg-gray-200 dark:hover:bg-gray-600"
+            >
+                <Search className="w-4 h-4 sm:w-5 sm:h-5 mx-auto text-gray-700 dark:text-gray-300" />
+            </button>
+          </form>
+
+            <div className="flex justify-center items-center gap-2 sm:gap-4">
+            <button
+              onClick={handlePreviousPage}
+              disabled={currentPage === 0}
+                className="px-3 sm:px-4 py-1 sm:py-2 bg-gray-100 dark:bg-gray-700 rounded disabled:opacity-50"
+            >
+                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-gray-300" />
+            </button>
+
+            <input
+              type="text"
+              value={inputPage}
+              onChange={handlePageChange}
+                className="w-12 sm:w-16 text-center px-1 sm:px-2 py-1 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+            />
+
+            <button
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
                 className="px-3 sm:px-4 py-1 sm:py-2 bg-gray-100 dark:bg-gray-700 rounded disabled:opacity-50"
               >
                 <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-gray-300" />
@@ -418,7 +470,7 @@ export const BookLayout: React.FC<BookLayoutProps> = ({ verses }) => {
                 className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50"
               >
                 <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-300" />
-              </button>
+            </button>
             </div>
           </div>
         </div>
@@ -430,15 +482,20 @@ export const BookLayout: React.FC<BookLayoutProps> = ({ verses }) => {
                 <div className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent" />
                 <h2 className="relative px-6 py-2 bg-white dark:bg-gray-800 text-lg sm:text-xl font-semibold">
                   <span className="bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400 bg-clip-text text-transparent">
-                    {surahs.find(s => s.id === Number(surahId))?.name}
+                {surahs.find(s => s.id === Number(surahId))?.name}
                   </span>
-                </h2>
+              </h2>
               </div>
               
               <div className="space-y-4">
-                {surahVerses.map((verse) => (
-                  <div key={verse.id} data-verse-id={verse.id} className="transition-colors duration-500">
-                    <p className="text-gray-800 dark:text-gray-200">
+              {surahVerses.map((verse) => (
+                <div 
+                  key={verse.id}
+                  data-verse-id={verse.verse_number}
+                  data-surah-id={verse.surah_id}
+                  className="transition-colors duration-500"
+                >
+                  <p className="text-gray-800 dark:text-gray-200">
                       <span 
                         className="text-gray-700 dark:text-gray-300"
                         style={{ 
@@ -446,8 +503,8 @@ export const BookLayout: React.FC<BookLayoutProps> = ({ verses }) => {
                           lineHeight: lineHeight
                         }}
                       >
-                        {verse.translation?.text}{' '}
-                      </span>
+                      {verse.translation?.text}{' '}
+                    </span>
                       <span 
                         className="text-gray-600 dark:text-gray-400 font-bold"
                         style={{ 
@@ -455,25 +512,25 @@ export const BookLayout: React.FC<BookLayoutProps> = ({ verses }) => {
                           lineHeight: lineHeight
                         }}
                       >
-                        ﴾{verse.verse_number}﴿
-                      </span>
-                    </p>
+                      ﴾{verse.verse_number}﴿
+                    </span>
+                  </p>
 
-                    {verse.translation?.footnotes?.length > 0 && (
-                      <button
-                        onClick={() => toggleFootnote(verse.id)}
+                  {verse.translation?.footnotes?.length > 0 && (
+                    <button
+                      onClick={() => toggleFootnote(verse.id)}
                         className="text-blue-600 dark:text-blue-400 hover:underline mt-1"
                         style={{ 
                           fontSize: `${fontSize * 0.75}px`
                         }}
-                      >
-                        {showFootnotes[verse.id] ? t.verse.hideFootnotes : t.verse.showFootnotes}
-                      </button>
-                    )}
+                    >
+                      {showFootnotes[verse.id] ? t.verse.hideFootnotes : t.verse.showFootnotes}
+                    </button>
+                  )}
 
-                    {showFootnotes[verse.id] && verse.translation?.footnotes && (
-                      <div className="mt-2 pl-4 border-l-2 border-gray-200 dark:border-gray-700">
-                        {verse.translation.footnotes.map((footnote) => (
+                  {showFootnotes[verse.id] && verse.translation?.footnotes && (
+                    <div className="mt-2 pl-4 border-l-2 border-gray-200 dark:border-gray-700">
+                      {verse.translation.footnotes.map((footnote) => (
                           <p 
                             key={footnote.id} 
                             className="text-gray-600 dark:text-gray-400 italic"
@@ -482,13 +539,13 @@ export const BookLayout: React.FC<BookLayoutProps> = ({ verses }) => {
                               lineHeight: lineHeight
                             }}
                           >
-                            [{footnote.number}] {footnote.text}
-                          </p>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
+                          [{footnote.number}] {footnote.text}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
               </div>
             </div>
           ))}
