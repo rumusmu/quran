@@ -12,7 +12,7 @@
 
   <div align="center">
     <a href="#features">Features</a> •
-    <a href="#demo">Live Demo</a> •
+    <a href="https://deepmushaf.web.app/">Live Demo</a> •
     <a href="#installation">Installation</a> •
     <a href="#contributing">Contributing</a>
   </div>
@@ -77,16 +77,7 @@ Before you begin, ensure you have the following installed:
    yarn install
    ```
 
-3. **Environment Setup**
-   ```bash
-   # Copy the example environment file
-   cp .env.example .env
-
-   # Configure your environment variables
-   nano .env
-   ```
-
-4. **Start Development Server**
+3. **Start Development Server**
    ```bash
    # Using npm
    npm run dev
@@ -95,7 +86,7 @@ Before you begin, ensure you have the following installed:
    yarn dev
    ```
 
-5. **Build for Production**
+4. **Build for Production**
    ```bash
    # Using npm
    npm run build
