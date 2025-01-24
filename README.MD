@@ -1,73 +1,114 @@
-<div style="text-align: center;">
+<div align="center">
   <img src="src/assets/quran.png" alt="Quran Web Application" width="200"/>
+  <h1>📖 Quran Web Application</h1>
+  <p>A modern, feature-rich Quran application built with React and TypeScript</p>
+
+  <div align="center">
+    <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React"/>
+    <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"/>
+    <img src="https://img.shields.io/badge/Redux-593D88?style=for-the-badge&logo=redux&logoColor=white" alt="Redux"/>
+    <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind"/>
+  </div>
+
+  <div align="center">
+    <a href="#features">Features</a> •
+    <a href="#demo">Live Demo</a> •
+    <a href="#installation">Installation</a> •
+    <a href="#contributing">Contributing</a>
+  </div>
 </div>
 
-# Quran Web Application
+## ✨ Features
 
-This web app allows users to **view verses**, **search for verses**, and **change languages** in the Quran. It supports **English** and **Turkish** languages, includes a **Dark/Light Mode** toggle, and has **voiceover** support for both languages.
+🔍 **Advanced Search**
+- Powerful verse search functionality
+- Real-time search results
+- Search history tracking
 
-## Features
+🌍 **Multi-language Support**
+- English and Turkish translations
+- Seamless language switching
+- Complete UI localization
 
-- **Search for Verses**: Easily search for any term or word within the Quran.
-- **Language Toggle**: Switch between **English** and **Turkish** effortlessly.
-- **Dark/Light Mode**: Change the theme of the app for a better reading experience.
-- **Voice Support**: Listen to the verses in **English** or **Turkish**.
-- **Fully Responsive**: Designed for optimal viewing on both mobile and desktop devices.
+🎨 **Modern UI/UX**
+- Elegant dark/light mode
+- Responsive design for all devices
+- Smooth animations and transitions
 
-## Technologies Used
+🔊 **Audio Features**
+- High-quality voice-over support
+- Multiple recitation styles
+- Audio playback controls
+
+## 🛠️ Tech Stack
 
 ### Frontend
+- **React.js** - Modern UI development
+- **Redux Toolkit** - State management
+- **Tailwind CSS** - Styling and design
+- **TypeScript** - Type-safe development
 
-- **React.js** - JavaScript library for building user interfaces.
-- **Redux Toolkit** - A modern Redux library for managing app state.
-- **Tailwind CSS** - Utility-first CSS framework for styling.
-- **TypeScript** - JavaScript with static types for better maintainability.
+### Backend Integration
+- **Açık Quran API** - Comprehensive Quranic data ([API Documentation](https://github.com/acik-kuran/acikkuran-api))
 
-### Backend
+## 🚀 Getting Started
 
-- **Açık Quran API** - [Açık Quran API](https://github.com/acik-kuran/acikkuran-api), an open-source Quran API providing Quranic data.
+### Prerequisites
 
-### Features Implemented
+Before you begin, ensure you have the following installed:
+- Node.js (v14 or higher)
+- npm or yarn package manager
+- Git
 
-- **Dark/Light Mode** support for a comfortable reading experience.
-- **Voice-over support** in both **English** and **Turkish**.
-- **Language toggle** between **English** and **Turkish**.
+### Installation Steps
 
-## Installation
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/0memo07/Quran-Web-Application.git
+   cd Quran-Web-Application
+   ```
 
-Follow these steps to set up the project locally.
+2. **Install Dependencies**
+   ```bash
+   # Using npm
+   npm install
 
-### 1. Clone the Repository
+   # Using yarn
+   yarn install
+   ```
 
-Clone the repository to your local machine:
+3. **Environment Setup**
+   ```bash
+   # Copy the example environment file
+   cp .env.example .env
 
-```bash
-git clone https://github.com/0memo07/Quran-Web-Application.git
-```
+   # Configure your environment variables
+   nano .env
+   ```
 
-### 2. Install Dependencies
+4. **Start Development Server**
+   ```bash
+   # Using npm
+   npm run dev
 
-Navigate to the project folder and install the necessary dependencies:
+   # Using yarn
+   yarn dev
+   ```
 
-```bash
-cd Quran-Web-Application
-```
-```bash
-npm install
-```
-or 
-```bash
-yarn install
-```
+5. **Build for Production**
+   ```bash
+   # Using npm
+   npm run build
 
-### 3. Run the Application
+   # Using yarn
+   yarn build
+   ```
 
-Start the development server to run the app locally:
 
-```bash
-npm start
-```
-or
-```bash
-yarn start
-```
+## 🤝 Contributing
+
+Contributions are always welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for ways to get started.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
