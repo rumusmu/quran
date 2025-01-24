@@ -23,7 +23,6 @@
 🔍 **Advanced Search**
 - Powerful verse search functionality
 - Real-time search results
-- Search history tracking
 
 🌍 **Multi-language Support**
 - English and Turkish translations
@@ -37,7 +36,6 @@
 
 🔊 **Audio Features**
 - High-quality voice-over support
-- Multiple recitation styles
 - Audio playback controls
 
 ## 🛠️ Tech Stack
