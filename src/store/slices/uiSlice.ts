@@ -17,7 +17,7 @@ const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matche
 const initialState: UIState = {
   isDarkMode: savedTheme ? JSON.parse(savedTheme) : prefersDarkMode,
   language: savedLanguage as 'tr' | 'en' || 'en',
-  readingType: (savedReadingType as ReadingType) || 'card',
+  readingType: (savedReadingType as ReadingType) || 'book',
 };
 
 const uiSlice = createSlice({

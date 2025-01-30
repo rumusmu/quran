@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Search, ChevronUp, ChevronDown, Settings } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search, ChevronUp, ChevronDown, Settings, Loader2 } from 'lucide-react';
 import { useSelector,useDispatch } from 'react-redux';
 import { selectSurahs } from '../store/slices/quranSlice';
 import { Verse } from '../api/types';
 import { useTranslations } from '../translations';
 import { selectBookCurrentSurahId, setBookCurrentSurahId  } from '../store/slices/quranSlice';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { selectSelectedAuthor, selectTranslationsLoading } from '../store/slices/translationsSlice';
 
 interface BookLayoutProps {
   verses: Verse[];
@@ -33,6 +34,8 @@ export const BookLayout: React.FC<BookLayoutProps> = ({ verses }) => {
   const { surahId, verseId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const isLoading = useSelector(selectTranslationsLoading);
+  const selectedAuthor = useSelector(selectSelectedAuthor);
 
   const totalPages = Math.max(...verses.map((verse) => verse.page));
   const currentPageVerses = verses.filter((verse) => verse.page === currentPage);
@@ -475,9 +478,20 @@ export const BookLayout: React.FC<BookLayoutProps> = ({ verses }) => {
           </div>
         </div>
 
-        <div className="p-3 sm:p-6 space-y-6">
+        <div className="p-3 sm:p-6 space-y-6 relative min-h-[400px]">
+          {isLoading ? (
+            <div className="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm z-10">
+              <div className="text-center">
+                <Loader2 className="w-10 h-10 animate-spin text-emerald-600 dark:text-emerald-400 mx-auto" />
+                <p className="mt-4 text-gray-600 dark:text-gray-300">{t.loading}</p>
+              </div>
+            </div>
+          ) : null}
+
           {Object.entries(versesBySurah).map(([surahId, surahVerses]) => (
-            <div key={surahId} data-surah-id={surahId}>
+            <div key={surahId} data-surah-id={surahId} 
+              className={`transition-opacity duration-300 ${isLoading ? 'opacity-40' : 'opacity-100'}`}
+            >
               <div className="flex items-center justify-center mb-6 relative">
                 <div className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent" />
                 <h2 className="relative px-6 py-2 bg-white dark:bg-gray-800 text-lg sm:text-xl font-semibold">

@@ -31,6 +31,9 @@ const translationsSlice = createSlice({
     setSelectedAuthor: (state, action) => {
       state.selectedAuthor = action.payload;
     },
+    setLoading: (state, action) => {
+      state.loading = action.payload;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -48,7 +51,7 @@ const translationsSlice = createSlice({
   },
 });
 
-export const { setSelectedAuthor } = translationsSlice.actions;
+export const { setSelectedAuthor, setLoading } = translationsSlice.actions;
 
 export const selectAuthors = (state: RootState) => state.translations.authors;
 export const selectSelectedAuthor = (state: RootState) => state.translations.selectedAuthor;

@@ -26,6 +26,7 @@ import {
   selectSelectedAuthor,
   setSelectedAuthor,
   selectAuthors,
+  setLoading,
 } from './store/slices/translationsSlice';
 import { useTranslations } from './translations';
 import { selectReadingType, setReadingType } from './store/slices/uiSlice';
@@ -62,7 +63,9 @@ function App() {
 
   useEffect(() => {
     if (readingType === 'book') {
-      dispatch(fetchAllVerses(selectedAuthor?.id));
+      dispatch(fetchAllVerses(selectedAuthor?.id)).then(() => {
+        dispatch(setLoading(false));
+      });
     }
   }, [dispatch, readingType, selectedAuthor]);
 
