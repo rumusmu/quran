@@ -68,7 +68,14 @@ const translations = {
         smaller: 'Smaller',
         larger: 'Larger',
         lineHeightTight: 'Tight',
-        lineHeightRelaxed: 'Relaxed'
+        lineHeightRelaxed: 'Relaxed',
+        viewType: {
+          title: 'View Type',
+          mealOnly: 'Translation Only',
+          mealAndQuran: 'Translation + Quran',
+          quranAndMeal: 'Quran + Translation',
+          quranOnly: 'Quran Only'
+        }
       }
     }
   },
@@ -139,7 +146,14 @@ const translations = {
         smaller: 'Küçült',
         larger: 'Büyüt',
         lineHeightTight: 'Sık',
-        lineHeightRelaxed: 'Rahat'
+        lineHeightRelaxed: 'Rahat',
+        viewType: {
+          title: 'Görünüm',
+          mealOnly: 'Sadece Meal',
+          mealAndQuran: 'Meal + Kuran',
+          quranAndMeal: 'Kuran + Meal',
+          quranOnly: 'Sadece Kuran'
+        }
       }
     }
   }

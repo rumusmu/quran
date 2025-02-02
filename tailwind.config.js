@@ -10,6 +10,7 @@ export default {
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
         arabic: ['Amiri', 'serif'],
+        hafs: ['KFGQPC Uthmanic Script HAFS', 'serif'],
       },
       animation: {
         'spin-slow': 'spin 3s linear infinite',
