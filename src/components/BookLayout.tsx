@@ -302,7 +302,7 @@ export const BookLayout: React.FC<BookLayoutProps> = ({ verses }) => {
                 ))}
               </div>
             </div>
-
+            
             <div className="space-y-4">
               <div>
                 <div className="flex justify-between mb-2">
@@ -318,7 +318,7 @@ export const BookLayout: React.FC<BookLayoutProps> = ({ verses }) => {
                   <input
                     type="range"
                     min="12"
-                    max="24"
+                    max={viewType === 'kuran' ? "32" : "24"}
                     value={fontSize}
                     onChange={(e) => setFontSize(Number(e.target.value))}
                     className="flex-1 h-1 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer
@@ -528,12 +528,12 @@ export const BookLayout: React.FC<BookLayoutProps> = ({ verses }) => {
                 <div className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent" />
                 <h2 className="relative px-6 py-2 bg-white dark:bg-gray-800 text-lg sm:text-xl font-semibold">
                   <span className="bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400 bg-clip-text text-transparent">
-                    {surahs.find(s => s.id === Number(surahId))?.name}
+                {surahs.find(s => s.id === Number(surahId))?.name}
                   </span>
-                </h2>
+              </h2>
               </div>
+              
 
-              {/* Kuran-ı Kerim Metni */}
               <div
                 className={`
                   ${viewType === 'kuran' 
@@ -541,13 +541,13 @@ export const BookLayout: React.FC<BookLayoutProps> = ({ verses }) => {
                     : 'space-y-4'
                   }
                 `}
-                dir={viewType === 'kuran' ? 'rtl' : 'ltr'} // Sadece Kuran modunda RTL
+                dir={viewType === 'kuran' ? 'rtl' : 'ltr'}
               >
-                {surahVerses.map((verse) => (
-                  <div
-                    key={verse.id}
-                    data-verse-id={verse.verse_number}
-                    data-surah-id={verse.surah_id}
+              {surahVerses.map((verse) => (
+                <div 
+                  key={verse.id}
+                  data-verse-id={verse.verse_number}
+                  data-surah-id={verse.surah_id}
                     className={`
                       transition-all duration-300
                       ${viewType === 'kuran' 
@@ -569,12 +569,22 @@ export const BookLayout: React.FC<BookLayoutProps> = ({ verses }) => {
                               : 'text-3xl block text-right'
                             }
                           `}
-                          style={{ wordSpacing: '0.1em' }}
+                          style={{ 
+                            wordSpacing: '0.1em',
+                            fontSize: viewType === 'kuran' 
+                              ? `${fontSize * 2}px`
+                              : `${fontSize * 2}px`
+                          }}
                         >
                           {verse.verse}
                           {viewType === 'kuran' && (
-                            <span className="inline-block mx-1 text-gray-500 dark:text-gray-400 text-lg align-middle">
-                              ﴾{verse.verse_number}﴿
+                            <span 
+                              className="inline-block mx-1 text-gray-500 dark:text-gray-400 align-middle"
+                              style={{
+                                fontSize: `${fontSize}px`
+                              }}
+                            >
+                              ﴿{verse.verse_number}﴾
                             </span>
                           )}
                         </span>
@@ -586,58 +596,57 @@ export const BookLayout: React.FC<BookLayoutProps> = ({ verses }) => {
                       <div className={`
                         ${viewType !== 'meal' ? 'border-t dark:border-gray-700 pt-4' : ''}
                       `}>
-                        <p className="text-gray-800 dark:text-gray-200">
-                          <span 
-                            className="text-gray-700 dark:text-gray-300"
+                  <p className="text-gray-800 dark:text-gray-200">
+                      <span 
+                        className="text-gray-700 dark:text-gray-300"
                             style={{ fontSize: `${fontSize}px`, lineHeight }}
-                          >
-                            {verse.translation?.text}{' '}
-                          </span>
-                          <span 
-                            className="text-gray-600 dark:text-gray-400 font-bold"
+                      >
+                      {verse.translation?.text}{' '}
+                    </span>
+                      <span 
+                        className="text-gray-600 dark:text-gray-400 font-bold"
                             style={{ fontSize: `${fontSize * 0.9}px`, lineHeight }}
-                          >
-                            ﴾{verse.verse_number}﴿
-                          </span>
-                        </p>
+                      >
+                      ﴾{verse.verse_number}﴿
+                    </span>
+                  </p>
                       </div>
                     )}
 
-                    {/* Dipnotlar - Kuran modunda gösterme */}
                     {viewType !== 'kuran' && verse.translation?.footnotes?.length > 0 && (
                       <div className={`
                         ${viewType === 'meal' ? 'mt-2' : 'mt-3'}
                       `}>
-                        <button
-                          onClick={() => toggleFootnote(verse.id)}
+                    <button
+                      onClick={() => toggleFootnote(verse.id)}
                           className="text-emerald-600 dark:text-emerald-400 hover:underline text-sm flex items-center gap-2"
-                        >
+                    >
                           <span style={{ fontSize: `${fontSize * 0.75}px` }}>
-                            {showFootnotes[verse.id] ? t.verse.hideFootnotes : t.verse.showFootnotes}
+                      {showFootnotes[verse.id] ? t.verse.hideFootnotes : t.verse.showFootnotes}
                           </span>
                           {showFootnotes[verse.id] ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                        </button>
+                    </button>
 
                         {showFootnotes[verse.id] && (
                           <div className="mt-2 pl-4 border-l-2 border-emerald-200 dark:border-emerald-800 space-y-2">
-                            {verse.translation.footnotes.map((footnote) => (
-                              <p 
-                                key={footnote.id} 
-                                className="text-gray-600 dark:text-gray-400 italic"
+                      {verse.translation.footnotes.map((footnote) => (
+                          <p 
+                            key={footnote.id} 
+                            className="text-gray-600 dark:text-gray-400 italic"
                                 style={{ fontSize: `${fontSize * 0.8}px`, lineHeight }}
-                              >
+                          >
                                 <span className="font-medium text-emerald-600 dark:text-emerald-400">
                                   [{footnote.number}]
                                 </span>{' '}
                                 {footnote.text}
-                              </p>
-                            ))}
+                        </p>
+                      ))}
                           </div>
                         )}
-                      </div>
-                    )}
-                  </div>
-                ))}
+                    </div>
+                  )}
+                </div>
+              ))}
               </div>
             </div>
           ))}

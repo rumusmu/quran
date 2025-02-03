@@ -7,6 +7,8 @@ import { SearchDialog } from "./SearchDialog";
 import { useTranslations } from "../translations";
 import * as Popover from "@radix-ui/react-popover";
 import { ReadingTypeSelector } from "./ReadingTypeSelector";
+import { setSelectedAuthor, selectAuthors } from "../store/slices/translationsSlice";
+import { setLoading } from "../store/slices/translationsSlice";
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -21,23 +23,34 @@ export function Header({
   const t = useTranslations();
   const isDarkMode = useSelector(selectIsDarkMode);
   const language = useSelector(selectSearchLanguage);
+  const authors = useSelector(selectAuthors);
   const [isSearchOpen, setIsSearchOpen] = React.useState(false);
   // const [isPopoverVisible, setIsPopoverVisible] = React.useState<boolean>(
   //   !localStorage.getItem("languageChanged")
   // );
 
+  const selectFirstAuthorByLanguage = (lang: string) => {
+    dispatch(setLoading(true));
+    const firstAuthor = authors.find(author => author.language === lang);
+    if (firstAuthor) {
+      dispatch(setSelectedAuthor(firstAuthor));
+    }
+  };
+  
   useEffect(() => {
     if (!localStorage.getItem("languageChanged")) {
       dispatch(setLanguage("en"));
+      selectFirstAuthorByLanguage("en");
       setIsPopoverVisible(true);
     } else {
       setIsPopoverVisible(false); 
     }
-  }, [dispatch]);
+  }, [dispatch, authors]);
   
   const handleLanguageChange = () => {
     const newLanguage = language === "tr" ? "en" : "tr";
     dispatch(setLanguage(newLanguage));
+    selectFirstAuthorByLanguage(newLanguage);
     localStorage.setItem("languageChanged", "true");
     setIsPopoverVisible(false); 
   };
