@@ -1,7 +1,7 @@
 import { Author, Surah, Verse, SearchResponse, RandomSearchResponse } from './types';
 
 const BASE_URL = 'https://api.acikkuran.com';
-const API_V2_URL = 'https://apiv2.acikkuran.com';
+
 
 async function fetchData<T>(url: string): Promise<T> {
   const response = await fetch(url);
@@ -18,11 +18,11 @@ export async function fetchAuthors(): Promise<Author[]> {
 }
 
 export async function searchQuran(query: string, language: string = 'en'): Promise<SearchResponse> {
-  const url = `${API_V2_URL}/search?q=${encodeURIComponent(query)}&type=quick&lang=${language}`;
+  const url = `${BASE_URL}/search?q=${encodeURIComponent(query)}&type=quick&lang=${language}`;
   return fetchData<SearchResponse>(url);
 }
 export async function getRandomVerse(language: string = 'en'): Promise<RandomSearchResponse> {
-  const url = `${API_V2_URL}/random-search?lang=${language}`;
+  const url = `${BASE_URL}/random-search?lang=${language}`;
   return fetchData<RandomSearchResponse>(url);
 }
 

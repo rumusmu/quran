@@ -3,7 +3,6 @@ import { Book, Moon, Sun, Search, Menu } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme, selectIsDarkMode } from "../store/slices/uiSlice";
 import { setLanguage, selectSearchLanguage } from "../store/slices/searchSlice";
-import { SearchDialog } from "./SearchDialog";
 import { useTranslations } from "../translations";
 import * as Popover from "@radix-ui/react-popover";
 import { ReadingTypeSelector } from "./ReadingTypeSelector";
@@ -14,11 +13,13 @@ interface HeaderProps {
   onMenuClick: () => void;
   isPopoverVisible: boolean;
   setIsPopoverVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  onSearchOpen: () => void;
 }
 export function Header({  
   onMenuClick, 
   isPopoverVisible, 
-  setIsPopoverVisible  }: HeaderProps) {
+  setIsPopoverVisible,
+  onSearchOpen  }: HeaderProps) {
   const dispatch = useDispatch();
   const t = useTranslations();
   const isDarkMode = useSelector(selectIsDarkMode);
@@ -79,7 +80,7 @@ export function Header({
           <div className="flex items-center gap-2">
             {/* <ReadingTypeSelector /> */}
             <button
-              onClick={() => setIsSearchOpen(true)}
+              onClick={onSearchOpen}
               className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
               <Search className="w-5 h-5" />
@@ -132,8 +133,6 @@ export function Header({
           </div>
         </div>
       </div>
-
-      <SearchDialog isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </header>
   );
 }

@@ -30,6 +30,7 @@ import {
 } from './store/slices/translationsSlice';
 import { useTranslations } from './translations';
 import { selectReadingType, setReadingType } from './store/slices/uiSlice';
+import { SearchDialog } from './components/SearchDialog';
 
 function App() {
   const language = useSelector(selectSearchLanguage);
@@ -49,6 +50,7 @@ function App() {
   const location = useLocation();
   const surahs = useSelector(selectSurahs);
   const authors = useSelector(selectAuthors);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   useEffect(() => {
     dispatch(fetchAllSurahs());
@@ -130,7 +132,10 @@ function App() {
           onMenuClick={() => setIsSidebarOpen(true)}
           isPopoverVisible={isPopoverVisible}
           setIsPopoverVisible={setIsPopoverVisible}
+          onSearchOpen={() => setIsSearchOpen(true)}
         />
+
+        <SearchDialog isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
 
         <div className="flex">
           <div

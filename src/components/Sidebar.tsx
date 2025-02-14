@@ -54,11 +54,18 @@ export function Sidebar() {
       setProgress(0);
     };
   
+
+    const handleLoadedMetadata = () => {
+      setDuration(audioElement.duration);
+    };
+  
+    audioElement.addEventListener('loadedmetadata', handleLoadedMetadata);
     audioElement.addEventListener('timeupdate', updateProgress);
     audioElement.addEventListener('ended', handleEnded);
   
     return () => {
       if (audioElement) {
+        audioElement.removeEventListener('loadedmetadata', handleLoadedMetadata);
         audioElement.removeEventListener('timeupdate', updateProgress);
         audioElement.removeEventListener('ended', handleEnded);
       }
