@@ -36,7 +36,8 @@ function App() {
   const language = useSelector(selectSearchLanguage);
   const t = useTranslations();
   const [isPopoverVisible, setIsPopoverVisible] = useState(
-    !localStorage.getItem('languageChanged')
+    // !localStorage.getItem('languageChanged')
+    false
   );
   const dispatch = useDispatch<AppDispatch>();
   const verses = useSelector(selectVerses);
@@ -90,6 +91,10 @@ function App() {
     }
   }, [surahId, readingType, authorId, dispatch, authors, currentSurah, surahs]);
 
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   if (loading) {
     return (
       <>
@@ -118,18 +123,18 @@ function App() {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <html lang={language} />
       </Helmet>
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-900 dark:to-gray-800">
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-900 dark:to-gray-800 pt-16">
         {isPopoverVisible && (
           <div
             className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[50] flex items-center justify-center"
             onClick={() => {
               setIsPopoverVisible(false);
-              localStorage.setItem('languageChanged', 'true');
+              // localStorage.setItem('languageChanged', 'true');
             }}
           />
         )}
         <Header
-          onMenuClick={() => setIsSidebarOpen(true)}
+          onMenuClick={toggleSidebar}
           isPopoverVisible={isPopoverVisible}
           setIsPopoverVisible={setIsPopoverVisible}
           onSearchOpen={() => setIsSearchOpen(true)}

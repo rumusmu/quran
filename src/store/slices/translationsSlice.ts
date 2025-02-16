@@ -20,7 +20,19 @@ const initialState: TranslationsState = {
 export const fetchAllAuthors = createAsyncThunk(
   'translations/fetchAuthors',
   async () => {
-    return await fetchAuthors();
+    const authors = await fetchAuthors();
+    const currentLanguage = localStorage.getItem('language') || 'en';
+    const lastSelectedAuthorId = localStorage.getItem('lastSelectedAuthorId');
+    
+    let defaultAuthor;
+    if (lastSelectedAuthorId) {
+      defaultAuthor = authors.find(author => author.id === Number(lastSelectedAuthorId));
+    }
+    if (!defaultAuthor) {
+      defaultAuthor = authors.find(author => author.language === currentLanguage);
+    }
+    
+    return { authors, defaultAuthor };
   }
 );
 
@@ -30,6 +42,9 @@ const translationsSlice = createSlice({
   reducers: {
     setSelectedAuthor: (state, action) => {
       state.selectedAuthor = action.payload;
+      if (action.payload) {
+        localStorage.setItem('lastSelectedAuthorId', action.payload.id.toString());
+      }
     },
     setLoading: (state, action) => {
       state.loading = action.payload;
@@ -41,7 +56,10 @@ const translationsSlice = createSlice({
         state.loading = true;
       })
       .addCase(fetchAllAuthors.fulfilled, (state, action) => {
-        state.authors = action.payload;
+        state.authors = action.payload.authors;
+        if (!state.selectedAuthor && action.payload.defaultAuthor) {
+          state.selectedAuthor = action.payload.defaultAuthor;
+        }
         state.loading = false;
       })
       .addCase(fetchAllAuthors.rejected, (state, action) => {

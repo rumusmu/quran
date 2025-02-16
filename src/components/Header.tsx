@@ -1,11 +1,9 @@
-import React, { useEffect } from "react";
-import { Book, Moon, Sun, Search, Menu } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Book, Moon, Sun, Search, Menu, NotebookText, X, ChevronDown } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleTheme, selectIsDarkMode } from "../store/slices/uiSlice";
 import { setLanguage, selectSearchLanguage } from "../store/slices/searchSlice";
 import { useTranslations } from "../translations";
-import * as Popover from "@radix-ui/react-popover";
-import { ReadingTypeSelector } from "./ReadingTypeSelector";
 import { setSelectedAuthor, selectAuthors } from "../store/slices/translationsSlice";
 import { setLoading } from "../store/slices/translationsSlice";
 
@@ -15,124 +13,237 @@ interface HeaderProps {
   setIsPopoverVisible: React.Dispatch<React.SetStateAction<boolean>>;
   onSearchOpen: () => void;
 }
-export function Header({  
-  onMenuClick, 
-  isPopoverVisible, 
-  setIsPopoverVisible,
-  onSearchOpen  }: HeaderProps) {
+
+export function Header({ onMenuClick, isPopoverVisible, setIsPopoverVisible, onSearchOpen }: HeaderProps) {
   const dispatch = useDispatch();
   const t = useTranslations();
   const isDarkMode = useSelector(selectIsDarkMode);
   const language = useSelector(selectSearchLanguage);
   const authors = useSelector(selectAuthors);
-  const [isSearchOpen, setIsSearchOpen] = React.useState(false);
-  // const [isPopoverVisible, setIsPopoverVisible] = React.useState<boolean>(
-  //   !localStorage.getItem("languageChanged")
-  // );
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
 
   const selectFirstAuthorByLanguage = (lang: string) => {
     dispatch(setLoading(true));
-    const firstAuthor = authors.find(author => author.language === lang);
-    if (firstAuthor) {
-      dispatch(setSelectedAuthor(firstAuthor));
+    const filteredAuthors = authors.filter(author => author.language === lang);
+    if (filteredAuthors.length > 0) {
+      const selectedAuthor = lang === 'tr' ? filteredAuthors[null] : filteredAuthors[0];
+      dispatch(setSelectedAuthor(selectedAuthor));
     }
-  };
-  
-  useEffect(() => {
-    if (!localStorage.getItem("languageChanged")) {
-      dispatch(setLanguage("en"));
-      selectFirstAuthorByLanguage("en");
-      setIsPopoverVisible(true);
-    } else {
-      setIsPopoverVisible(false); 
-    }
-  }, [dispatch, authors]);
-  
-  const handleLanguageChange = () => {
-    const newLanguage = language === "tr" ? "en" : "tr";
-    dispatch(setLanguage(newLanguage));
-    selectFirstAuthorByLanguage(newLanguage);
-    localStorage.setItem("languageChanged", "true");
-    setIsPopoverVisible(false); 
   };
 
+  const handleLanguageChange = (newLang: "tr" | "en") => {
+    dispatch(setLanguage(newLang));
+    
+    if (newLang === 'tr') {
+      dispatch(setLoading(true));
+      dispatch(setSelectedAuthor(null));
+    } else {
+      selectFirstAuthorByLanguage(newLang);
+    }
+    
+    setIsLangMenuOpen(false);
+    setIsMobileMenuOpen(false);
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
-    <header className="sticky top-0 z-50 backdrop-blur-lg bg-white/80 dark:bg-gray-900/80 border-b border-gray-200/50 dark:border-gray-800/50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center">
+    <header className="fixed top-0 left-0 right-0 z-50 h-16">
+      <div className="absolute inset-0 backdrop-blur-xl bg-white/75 dark:bg-gray-900/75 border-b border-gray-200/50 dark:border-gray-800/50" />
+    
+      <nav className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-full">
+          <div className="flex items-center gap-3">
             <button
               onClick={onMenuClick}
-              className="p-2 -ml-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 lg:hidden"
+              className="inline-flex items-center justify-center p-2.5 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 md:hidden transition-all"
+              aria-label={t.header.menu}
             >
               <Menu className="w-5 h-5" />
             </button>
-            <div className="flex items-center ml-2 lg:ml-0">
-              <div className="bg-gradient-to-br from-emerald-500 to-teal-500 p-2 rounded-lg">
+            <div className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+              <div className="bg-gradient-to-br from-emerald-500 to-teal-500 p-2.5 rounded-xl shadow-lg">
                 <Book className="h-5 w-5 text-white" />
               </div>
-              <h1 className="ml-3 text-xl font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400 bg-clip-text text-transparent">
+              <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400 bg-clip-text text-transparent">
                 {t.title}
               </h1>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            {/* <ReadingTypeSelector /> */}
+
+          <div className="hidden md:flex items-center gap-4">
+            <a
+              href="/notes"
+              className="group flex items-center gap-2 px-4 py-2 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+            >
+              <NotebookText className="w-5 h-5 group-hover:text-emerald-500 transition-colors" />
+              <span className="font-medium">{t.header.notes}</span>
+            </a>
+
             <button
               onClick={onSearchOpen}
-              className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="group p-2.5 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+              aria-label={t.header.search}
             >
-              <Search className="w-5 h-5" />
+              <Search className="w-5 h-5 group-hover:text-emerald-500 transition-colors" />
             </button>
 
-            {isPopoverVisible && (
-              <div 
-                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center" 
-                onClick={() => setIsPopoverVisible(false)}
-              />
-            )}
-            <Popover.Root 
-              open={isPopoverVisible} 
-              onOpenChange={(open) => {
-                if (localStorage.getItem("languageChanged")) {
-                  setIsPopoverVisible(false);
-                } else {
-                  setIsPopoverVisible(open);
-                }
-              }}
-            >
-              <Popover.Trigger asChild>
-                <button
-                  onClick={handleLanguageChange}
-                  className="flex items-center justify-center w-10 h-10 rounded-md bg-emerald-100 dark:bg-emerald-900 hover:bg-emerald-200 dark:hover:bg-emerald-800 text-emerald-700 dark:text-emerald-300 transition-colors shadow-sm relative z-[70]"
-                  title={t.header.toggleLanguage}
-                >
-                  <span className="text-sm font-semibold">
-                    {language === "tr" ? "TR" : "EN"}
-                  </span>
-                </button>
-              </Popover.Trigger>
-              <Popover.Content
-                className="rounded-lg bg-white dark:bg-gray-800 shadow-lg p-4 text-sm text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700 relative z-[70]"
-                side="bottom"
-                align="center"
-                sideOffset={5}
+            <div className="relative">
+              <button
+                onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500/5 to-teal-500/5 hover:from-emerald-500/10 hover:to-teal-500/10 dark:from-emerald-500/10 dark:to-teal-500/10 dark:hover:from-emerald-500/20 dark:hover:to-teal-500/20 border border-emerald-200/50 dark:border-emerald-800/50 text-gray-700 dark:text-gray-200 transition-all shadow-sm"
               >
-                <p>Press the button to change language</p>
-                <Popover.Arrow className="fill-current text-gray-200 dark:text-gray-700" />
-              </Popover.Content>
-            </Popover.Root>
+                <div className="flex items-center gap-2">
+                  <span className={`w-2 h-2 rounded-full ${
+                    language === "tr" ? 'bg-emerald-500' : 'bg-teal-500'
+                  }`} />
+                  <span className="font-medium">
+                    {language === "tr" ? "Türkçe" : "English"}
+                  </span>
+                </div>
+                <ChevronDown 
+                  className={`w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform duration-200 ${
+                    isLangMenuOpen ? 'rotate-180' : ''
+                  }`} 
+                />
+              </button>
+
+  
+              {isLangMenuOpen && (
+                <>
+                  <div 
+                    className="fixed inset-0 z-10" 
+                    onClick={() => setIsLangMenuOpen(false)}
+                  />
+                  <div className="absolute right-0 mt-2 w-48 rounded-xl bg-white dark:bg-gray-800/95 backdrop-blur-sm shadow-xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden z-20">
+                    <div className="px-3 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 border-b border-gray-200/50 dark:border-gray-700/50">
+                      {t.header.selectLanguage}
+                    </div>
+                    {["en", "tr"].map((lang) => (
+                      <button
+                        key={lang}
+                        onClick={() => handleLanguageChange(lang as "en" | "tr")}
+                        className={`w-full flex items-center px-4 py-2.5 text-sm font-medium transition-all
+                          ${language === lang 
+                            ? 'bg-gradient-to-r from-emerald-500/10 to-teal-500/10 text-emerald-700 dark:text-emerald-300' 
+                            : 'hover:bg-gray-50 dark:hover:bg-gray-700/50 text-gray-700 dark:text-gray-300'
+                          }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className={`w-2 h-2 rounded-full ${
+                            lang === "tr" ? 'bg-emerald-500' : 'bg-teal-500'
+                          }`} />
+                          <span>{lang === "tr" ? "Türkçe" : "English"}</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
 
             <button
               onClick={() => dispatch(toggleTheme())}
-              className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="group p-2.5 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+              aria-label={isDarkMode ? t.header.lightMode : t.header.darkMode}
             >
-              {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              {isDarkMode ? (
+                <Sun className="w-5 h-5 group-hover:text-emerald-500 transition-colors" />
+              ) : (
+                <Moon className="w-5 h-5 group-hover:text-emerald-500 transition-colors" />
+              )}
             </button>
           </div>
+
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden p-2.5 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+            aria-label={t.header.menu}
+          >
+            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
         </div>
-      </div>
+
+        {isMobileMenuOpen && (
+          <div className="absolute top-full left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-b border-gray-200 dark:border-gray-800 shadow-xl md:hidden">
+            <div className="p-4 space-y-3">
+              <a
+                href="/notes"
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <NotebookText className="w-5 h-5" />
+                <span className="font-medium">{t.header.notes}</span>
+              </a>
+
+              <button
+                onClick={() => {
+                  onSearchOpen();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+              >
+                <Search className="w-5 h-5" />
+                <span className="font-medium">{t.header.search}</span>
+              </button>
+
+              <div className="space-y-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl p-3">
+                <div className="px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700">
+                  {t.header.selectLanguage}
+                </div>
+                {["en", "tr"].map((lang) => (
+                  <button
+                    key={lang}
+                    onClick={() => handleLanguageChange(lang as "en" | "tr")}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
+                      ${language === lang 
+                        ? 'bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-700 dark:text-emerald-300 shadow-sm' 
+                        : 'text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700'
+                      }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className={`w-2 h-2 rounded-full ${language === lang ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-gray-600'}`} />
+                      <span className="font-medium">
+                        {lang === "tr" ? "Türkçe" : "English"}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => {
+                  dispatch(toggleTheme());
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+              >
+                {isDarkMode ? (
+                  <>
+                    <Sun className="w-5 h-5" />
+                    <span className="font-medium">{t.header.lightMode}</span>
+                  </>
+                ) : (
+                  <>
+                    <Moon className="w-5 h-5" />
+                    <span className="font-medium">{t.header.darkMode}</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
+      </nav>
     </header>
   );
 }

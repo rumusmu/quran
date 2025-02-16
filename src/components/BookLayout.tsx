@@ -8,6 +8,7 @@ import { selectBookCurrentSurahId, setBookCurrentSurahId  } from '../store/slice
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { selectSelectedAuthor, selectTranslationsLoading } from '../store/slices/translationsSlice';
 import { selectViewType, setViewType, ViewType } from '../store/slices/uiSlice';
+import { NoteSection } from './notes/BookNoteSection';
 
 interface BookLayoutProps {
   verses: Verse[];
@@ -38,6 +39,10 @@ export const BookLayout: React.FC<BookLayoutProps> = ({ verses }) => {
   const isLoading = useSelector(selectTranslationsLoading);
   const selectedAuthor = useSelector(selectSelectedAuthor);
   const viewType = useSelector(selectViewType);
+  const [notes, setNotes] = useState<Note[]>(() => {
+    const savedNotes = localStorage.getItem('quran-notes');
+    return savedNotes ? JSON.parse(savedNotes) : [];
+  });
 
   const totalPages = Math.max(...verses.map((verse) => verse.page));
   const currentPageVerses = verses.filter((verse) => verse.page === currentPage);
@@ -224,19 +229,28 @@ export const BookLayout: React.FC<BookLayoutProps> = ({ verses }) => {
 
   // Sayfa veya sure değiştiğinde URL'yi kontrol et
   useEffect(() => {
-    // Eğer şu an bir sure/ayet URL'indeyse
     if (location.pathname.includes('/surah/')) {
       const currentVerse = verses.find(
         v => v.surah_id === Number(surahId) && v.verse_number === Number(verseId)
       );
 
-      // Eğer mevcut sayfa veya sure, URL'deki sure/ayetten farklıysa
       if (currentVerse?.page !== currentPage || currentVerse?.surah_id !== currentSurahId) {
-        // URL'yi temizle
         navigate('/', { replace: true });
       }
     }
   }, [currentPage, currentSurahId]);
+
+  const handleSaveNote = (note: Note) => {
+    const updatedNotes = [...notes.filter(n => n.verseId !== note.verseId), note];
+    setNotes(updatedNotes);
+    localStorage.setItem('quran-notes', JSON.stringify(updatedNotes));
+  };
+
+  const handleDeleteNote = (verseId: number) => {
+    const updatedNotes = notes.filter(n => n.verseId !== verseId);
+    setNotes(updatedNotes);
+    localStorage.setItem('quran-notes', JSON.stringify(updatedNotes));
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-2 sm:p-4">
@@ -548,54 +562,46 @@ export const BookLayout: React.FC<BookLayoutProps> = ({ verses }) => {
                   key={verse.id}
                   data-verse-id={verse.verse_number}
                   data-surah-id={verse.surah_id}
-                    className={`
-                      transition-all duration-300
-                      ${viewType === 'kuran' 
-                        ? 'inline text-3xl'
-                        : viewType === 'meal' 
-                          ? 'space-y-2'
-                          : 'space-y-4 p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-lg'
-                      }
-                    `}
-                  >
-                    {/* Kuran metni */}
-                    {(viewType === 'kuran' || viewType === 'kuran+meal') && (
-                      <div className={viewType === 'kuran' ? 'inline break-words' : 'mb-4'}>
-                        <span
-                          className={`
-                            font-scheherazade text-gray-800 dark:text-gray-200 select-text tracking-wide
-                            ${viewType === 'kuran' 
-                              ? 'text-4xl mx-1 inline break-words'
-                              : 'text-3xl block text-right'
-                            }
-                          `}
-                          style={{ 
-                            wordSpacing: '0.1em',
-                            fontSize: viewType === 'kuran' 
-                              ? `${fontSize * 2}px`
-                              : `${fontSize * 2}px`
-                          }}
-                        >
-                          {verse.verse}
-                          {viewType === 'kuran' && (
-                            <span 
-                              className="inline-block mx-1 text-gray-500 dark:text-gray-400 align-middle"
-                              style={{
-                                fontSize: `${fontSize}px`
-                              }}
-                            >
-                              ﴿{verse.verse_number}﴾
-                            </span>
-                          )}
-                        </span>
-                      </div>
-                    )}
+                  className="relative group"
+                >
+                  {/* Kuran metni */}
+                  {(viewType === 'kuran' || viewType === 'kuran+meal') && (
+                    <div className={viewType === 'kuran' ? 'inline break-words' : 'mb-4'}>
+                      <span
+                        className={`
+                          font-scheherazade text-gray-800 dark:text-gray-200 select-text tracking-wide
+                          ${viewType === 'kuran' 
+                            ? 'text-4xl mx-1 inline break-words'
+                            : 'text-3xl block text-right'
+                          }
+                        `}
+                        style={{ 
+                          wordSpacing: '0.1em',
+                          fontSize: viewType === 'kuran' 
+                            ? `${fontSize * 2}px`
+                            : `${fontSize * 2}px`
+                        }}
+                      >
+                        {verse.verse}
+                        {viewType === 'kuran' && (
+                          <span 
+                            className="inline-block mx-1 text-gray-500 dark:text-gray-400 align-middle"
+                            style={{
+                              fontSize: `${fontSize}px`
+                            }}
+                          >
+                            ﴿{verse.verse_number}﴾
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                  )}
 
-                    {/* Meal */}
-                    {(viewType === 'meal' || viewType === 'meal+kuran' || viewType === 'kuran+meal') && (
-                      <div className={`
-                        ${viewType !== 'meal' ? 'border-t dark:border-gray-700 pt-4' : ''}
-                      `}>
+                  {/* Meal */}
+                  {(viewType === 'meal' || viewType === 'meal+kuran' || viewType === 'kuran+meal') && (
+                    <div className={`
+                      ${viewType !== 'meal' ? 'border-t dark:border-gray-700 pt-4' : ''}
+                    `}>
                   <p className="text-gray-800 dark:text-gray-200">
                       <span 
                         className="text-gray-700 dark:text-gray-300"
@@ -610,25 +616,25 @@ export const BookLayout: React.FC<BookLayoutProps> = ({ verses }) => {
                       ﴾{verse.verse_number}﴿
                     </span>
                   </p>
-                      </div>
-                    )}
+                    </div>
+                  )}
 
-                    {viewType !== 'kuran' && verse.translation?.footnotes?.length > 0 && (
-                      <div className={`
-                        ${viewType === 'meal' ? 'mt-2' : 'mt-3'}
-                      `}>
-                    <button
-                      onClick={() => toggleFootnote(verse.id)}
-                          className="text-emerald-600 dark:text-emerald-400 hover:underline text-sm flex items-center gap-2"
-                    >
-                          <span style={{ fontSize: `${fontSize * 0.75}px` }}>
+                  {viewType !== 'kuran' && verse.translation?.footnotes?.length > 0 && (
+                    <div className={`
+                      ${viewType === 'meal' ? 'mt-2' : 'mt-3'}
+                    `}>
+                  <button
+                    onClick={() => toggleFootnote(verse.id)}
+                        className="text-emerald-600 dark:text-emerald-400 hover:underline text-sm flex items-center gap-2"
+                  >
+                        <span style={{ fontSize: `${fontSize * 0.75}px` }}>
                       {showFootnotes[verse.id] ? t.verse.hideFootnotes : t.verse.showFootnotes}
-                          </span>
-                          {showFootnotes[verse.id] ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                    </button>
+                        </span>
+                        {showFootnotes[verse.id] ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </button>
 
-                        {showFootnotes[verse.id] && (
-                          <div className="mt-2 pl-4 border-l-2 border-emerald-200 dark:border-emerald-800 space-y-2">
+                      {showFootnotes[verse.id] && (
+                        <div className="mt-2 pl-4 border-l-2 border-emerald-200 dark:border-emerald-800 space-y-2">
                       {verse.translation.footnotes.map((footnote) => (
                           <p 
                             key={footnote.id} 
@@ -641,12 +647,22 @@ export const BookLayout: React.FC<BookLayoutProps> = ({ verses }) => {
                                 {footnote.text}
                         </p>
                       ))}
-                          </div>
-                        )}
-                    </div>
-                  )}
-                </div>
-              ))}
+                        </div>
+                      )}
+                  </div>
+                )}
+
+                <NoteSection
+                  verseId={verse.verse_number}
+                  surahId={verse.surah_id}
+                  t={t}
+                  fontSize={fontSize}
+                  lineHeight={lineHeight}
+                  verseText={verse.translation?.text}
+                  verseNumber={verse.verse_number}
+                />
+              </div>
+            ))}
               </div>
             </div>
           ))}

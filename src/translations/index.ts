@@ -18,7 +18,11 @@ const translations = {
         toggleTheme: 'Toggle theme',
         toggleLanguage: 'Toggle language',
         darkMode: 'Dark mode',
-        lightMode: 'Light mode'
+        lightMode: 'Light mode',
+        notes: 'Notes',
+        search: 'Search',
+        selectLanguage: 'Select Language',
+        menu: 'Menu'
       },
       sidebar: {
         selectSurah: 'Select Surah',
@@ -76,6 +80,24 @@ const translations = {
           quranAndMeal: 'Quran + Translation',
           quranOnly: 'Quran Only'
         }
+      },
+      notes: {
+        addNote: 'Add Note',
+        editNote: 'Edit Note',
+        placeholder: 'Write your note here...',
+        save: 'Save',
+        cancel: 'Cancel',
+        delete: 'Delete',
+        noNotes: 'No notes yet',
+        savedAt: 'Saved at',
+        deleteConfirmation: 'Are you sure you want to delete this note?',
+        myNotes: 'My Notes',
+        noSearchResults: 'No Search Results',
+        tryAnotherSearch: 'Try Another Search',
+        startAddingNotes: 'Start Adding Notes',
+        startReading: 'Start Reading',
+        totalNotes: 'Note',
+        searchInNotes: 'Search in Notes...'
       }
     }
   },
@@ -95,7 +117,11 @@ const translations = {
         toggleTheme: 'Temayı değiştir',
         toggleLanguage: 'Dili değiştir',
         darkMode: 'Karanlık mod',
-        lightMode: 'Aydınlık mod'
+        lightMode: 'Aydınlık mod',
+        notes: 'Notlar',
+        search: 'Ara',
+        selectLanguage: 'Dil Seçimi',
+        menu: 'Menü'
       },
       sidebar: {
         selectSurah: 'Sure Seç',
@@ -120,7 +146,6 @@ const translations = {
           pause: 'Ayet sesini duraklat',
           loading: 'Ses yükleniyor...'
         }
-
       },
       share: {
         title: 'Ayeti Paylaş',
@@ -154,6 +179,24 @@ const translations = {
           quranAndMeal: 'Kuran + Meal',
           quranOnly: 'Sadece Kuran'
         }
+      },
+      notes: {
+        addNote: 'Not Ekle',
+        editNote: 'Notu Düzenle',
+        placeholder: 'Notunuzu buraya yazın...',
+        save: 'Kaydet',
+        cancel: 'İptal',
+        delete: 'Sil',
+        noNotes: 'Henüz not eklenmemiş',
+        savedAt: 'Kaydedilme zamanı',
+        deleteConfirmation: 'Bu notu silmek istediğinize emin misiniz?',
+        myNotes: 'Notlarım',
+        noSearchResults: 'Arama Sonucu Bulunamadı',
+        tryAnotherSearch: 'Başka bir arama yapmayı deneyin',
+        startAddingNotes: 'Okumaya başlayın ve ayetlere not ekleyin',
+        startReading: 'Okumaya Başla',
+        totalNotes: 'Not',
+        searchInNotes: 'Notlarda ara...'
       }
     }
   }

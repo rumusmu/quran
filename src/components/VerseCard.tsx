@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Share2, BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
+import { Share2, BookOpen, ChevronDown, ChevronUp, MessageSquare, X, Save } from 'lucide-react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import type { Verse } from '../api/types';
 import { ShareMenu } from './ShareMenu';
@@ -7,8 +7,11 @@ import { useTranslations } from '../translations';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectCurrentSurah, selectSurahs } from '../store/slices/quranSlice';
 import { selectSearchLanguage } from '../store/slices/searchSlice';
-import { selectReadingType } from '../store/slices/uiSlice';
+import { selectReadingType, addNote, selectNotes, deleteNote } from '../store/slices/uiSlice';
 import { selectSelectedAuthor } from '../store/slices/translationsSlice';
+import { CardNoteSection } from './notes/CardNoteSection';
+import { NotePopup } from './notes/NotePopup';
+import { DeleteNotePopup } from './notes/DeleteNotePopup';
 
 interface VerseCardProps {
   verse: Verse;
@@ -26,6 +29,13 @@ export function VerseCard({ verse }: VerseCardProps) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const selectedAuthor = useSelector(selectSelectedAuthor);
+  const [isEditing, setIsEditing] = useState(false);
+  const [showNotePopup, setShowNotePopup] = useState(false);
+  const [noteContent, setNoteContent] = useState('');
+  const [showNotes, setShowNotes] = useState(false);
+  const notes = useSelector(selectNotes);
+  const existingNote = notes.find(note => note.verseId === verse.verse_number);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
   const selectedSurah = surahs.find((surah) => surah.id === currentSurah);
   const verseInfo = `${selectedSurah?.name}, Verse ${verse.verse_number}`;
@@ -51,6 +61,34 @@ export function VerseCard({ verse }: VerseCardProps) {
     }
   }, [surahId, verseId, verse.id, verse.surah_id, verse.verse_number]);
 
+  const handleSaveNote = () => {
+    if (noteContent.trim()) {
+      const newNote = {
+        id: Date.now().toString(),
+        verseId: verse.verse_number,
+        surahId: verse.surah_id,
+        surahName: selectedSurah?.name || '',
+        content: noteContent.trim(),
+        createdAt: new Date().toISOString(),
+      };
+      dispatch(addNote(newNote));
+      setShowNotePopup(false);
+      setNoteContent('');
+      setIsEditing(false);
+    }
+  };
+
+  const handleEditClick = (content: string) => {
+    setNoteContent(content);
+    setShowNotePopup(true);
+    setIsEditing(true);
+  };
+
+  const handleDeleteNote = () => {
+    dispatch(deleteNote({ surahId: verse.surah_id, verseId: verse.verse_number }));
+    setShowDeleteConfirmation(false);
+  };
+
   if (readingType === 'book') {
     return null;
   }
@@ -62,7 +100,6 @@ export function VerseCard({ verse }: VerseCardProps) {
           <h1 className="text-center relative">
             <span className="absolute left-0 top-1/2 w-1/4 h-px bg-gradient-to-r from-transparent to-gray-300 dark:to-gray-600"></span>
             <span className="inline-flex flex-col items-center px-4">
-              {/*<span className="text-2xl font-semibold text-gray-900 dark:text-white mb-1">{selectedSurah?.name_en}</span>*/}
               <span className="font-arabic text-2xl text-gray-800 dark:text-gray-200">{selectedSurah?.name}</span>
             </span>
             <span className="absolute right-0 top-1/2 w-1/4 h-px bg-gradient-to-l from-transparent to-gray-300 dark:to-gray-600"></span>
@@ -96,12 +133,23 @@ export function VerseCard({ verse }: VerseCardProps) {
           </div>
           <div className="relative flex items-center gap-2">
             <button
+              onClick={() => !existingNote && setShowNotePopup(true)}
+              className={`p-2 rounded-lg transition-colors shadow-lg ${
+                existingNote 
+                  ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed' 
+                  : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+              }`}
+              title={existingNote ? t.notes.editNote : t.notes.addNote}
+              disabled={existingNote}
+            >
+              <MessageSquare className="w-4 h-4" />
+            </button>
+            <button
               onClick={() => setShowShareMenu(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white transition-colors"
+              className="p-2 rounded-lg bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shadow-lg"
               title={t.share.share}
             >
               <Share2 className="w-4 h-4" />
-              <span>{t.share.share}</span>
             </button>
           </div>
         </div>
@@ -118,6 +166,8 @@ export function VerseCard({ verse }: VerseCardProps) {
               <p className="text-gray-900 dark:text-gray-100 leading-relaxed">
                 {verse.translation.text}
               </p>
+
+              {/* Dipnotlar */}
               {verse.translation.footnotes && verse.translation.footnotes.length > 0 && (
                 <div className="mt-4 space-y-2">
                   <button
@@ -145,6 +195,34 @@ export function VerseCard({ verse }: VerseCardProps) {
                   )}
                 </div>
               )}
+
+              {/* Notlar Bölümü - Sadece not varsa göster */}
+              {existingNote && (
+                <div className="mt-4 space-y-2">
+                  <button
+                    onClick={() => setShowNotes(!showNotes)}
+                    className="flex items-center gap-2 text-sm text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
+                  >
+                    <span>Notes</span>
+                    {showNotes ? (
+                      <ChevronUp className="w-4 h-4" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4" />
+                    )}
+                  </button>
+                  {showNotes && (
+                    <div className="pl-4 border-l-2 border-emerald-200 dark:border-emerald-800">
+                      <CardNoteSection
+                        verseId={verse.verse_number}
+                        surahId={verse.surah_id}
+                        onDeleteClick={() => setShowDeleteConfirmation(true)}
+                        onEditClick={handleEditClick}
+                        t={t}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -156,6 +234,29 @@ export function VerseCard({ verse }: VerseCardProps) {
         verseText={verseText}
         verseInfo={verseInfo}
         verseLink={verseLink}
+      />
+
+      <NotePopup
+        isOpen={showNotePopup}
+        onClose={() => {
+          setShowNotePopup(false);
+          setNoteContent('');
+          setIsEditing(false);
+        }}
+        onSave={handleSaveNote}
+        content={noteContent}
+        onChange={setNoteContent}
+        verseNumber={verse.verse_number}
+        verseText={verse.translation?.text}
+        isEditing={isEditing}
+        t={t}
+      />
+
+      <DeleteNotePopup
+        isOpen={showDeleteConfirmation}
+        onClose={() => setShowDeleteConfirmation(false)}
+        onConfirm={handleDeleteNote}
+        t={t}
       />
     </>
   );

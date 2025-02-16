@@ -119,28 +119,28 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
       />
       
       {/* Search dialog */}
-      <div className="fixed inset-0 z-[80] flex items-start justify-center pt-4 sm:pt-16">
+    <div className="fixed inset-0 z-[80] flex items-start justify-center pt-4 sm:pt-16">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-3xl mx-4 h-[90vh] max-h-[800px] flex flex-col overflow-hidden border border-gray-200/50 dark:border-gray-700/50">
           {/* Header */}
           <div className="p-4 border-b border-gray-200/50 dark:border-gray-700/50 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
             <div className="flex items-center gap-3">
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
-                <input
-                  type="text"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder={t.search.placeholder}
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder={t.search.placeholder}
                   className="w-full pl-10 pr-4 py-2.5 bg-gray-100/50 dark:bg-gray-700/50 rounded-lg border border-gray-200/50 dark:border-gray-600/50 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 outline-none text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-all duration-200"
-                  autoFocus
-                />
+              autoFocus
+            />
                 {searchTerm && (
-                  <button
+              <button
                     onClick={() => setSearchTerm('')}
                     className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-lg hover:bg-gray-200/50 dark:hover:bg-gray-600/50"
-                  >
+              >
                     <X className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-                  </button>
+              </button>
                 )}
               </div>
               <button
@@ -149,19 +149,19 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
               >
                 <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
               </button>
-            </div>
           </div>
+        </div>
 
           {/* Content */}
           <div className="flex-1 overflow-y-auto overscroll-contain">
-            {isLoading ? (
+          {isLoading ? (
               <div className="flex items-center justify-center h-full">
                 <div className="text-center space-y-3">
                   <Loader2 className="w-8 h-8 animate-spin text-emerald-600 dark:text-emerald-400 mx-auto" />
                   <p className="text-sm text-gray-500 dark:text-gray-400">{t.loading}</p>
                 </div>
-              </div>
-            ) : searchTerm.length < 2 && !randomVerse ? (
+            </div>
+          ) : searchTerm.length < 2 && !randomVerse ? (
               <div className="p-8 text-center h-full flex items-center justify-center">
                 <div className="max-w-sm mx-auto space-y-4">
                   <Search className="w-12 h-12 mx-auto text-gray-300 dark:text-gray-600" />
@@ -172,8 +172,8 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
                     </p>
                   </div>
                 </div>
-              </div>
-            ) : searchResults.length === 0 && !randomVerse ? (
+            </div>
+          ) : searchResults.length === 0 && !randomVerse ? (
               <div className="p-8 text-center h-full flex items-center justify-center">
                 <div className="max-w-sm mx-auto space-y-4">
                   <Book className="w-12 h-12 mx-auto text-gray-300 dark:text-gray-600" />
@@ -186,108 +186,108 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
                     </p>
                   </div>
                 </div>
-              </div>
-            ) : (
+            </div>
+          ) : (
               <div className="divide-y divide-gray-200/50 dark:divide-gray-700/50">
                 {/* Random Verse Card */}
-                {randomVerse && !searchTerm && (
+              {randomVerse && !searchTerm && (
                   <div 
                     className="group p-4 sm:p-6 cursor-pointer hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-all duration-300"
                     onClick={() => handleVerseClick(randomVerse.surah.id, randomVerse.verse.verse_number)}
                   >
-                    <div className="flex items-start gap-4">
-                      <div className="bg-gradient-to-br from-emerald-500/10 to-teal-500/10 dark:from-emerald-500/20 dark:to-teal-500/20 p-3 rounded-xl flex-shrink-0">
-                        <Shuffle className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                      </div>
-                      <div className="flex-1 space-y-2">
-                        <div className="flex items-center justify-between flex-wrap gap-2">
-                          <h3 className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
-                            {randomVerse.surah.name_en} ({randomVerse.surah.name})
-                          </h3>
-                          <div className="flex items-center gap-2">
-                            {randomVerse.surah.audio && (
-                              <button
+                  <div className="flex items-start gap-4">
+                    <div className="bg-gradient-to-br from-emerald-500/10 to-teal-500/10 dark:from-emerald-500/20 dark:to-teal-500/20 p-3 rounded-xl flex-shrink-0">
+                      <Shuffle className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                    </div>
+                    <div className="flex-1 space-y-2">
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <h3 className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                          {randomVerse.surah.name_en} ({randomVerse.surah.name})
+                        </h3>
+                        <div className="flex items-center gap-2">
+                          {randomVerse.surah.audio && (
+                            <button
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleAudioPlay(
-                                    language === 'en' ? randomVerse.surah.audio!.mp3_en : randomVerse.surah.audio!.mp3,
-                                    randomVerse.verse.id
+                                language === 'en' ? randomVerse.surah.audio!.mp3_en : randomVerse.surah.audio!.mp3,
+                                randomVerse.verse.id
                                   );
                                 }}
-                                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                              >
-                                {isPlaying && currentAudioId === randomVerse.verse.id ? (
-                                  <Pause className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                                ) : (
-                                  <Volume2 className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                                )}
-                              </button>
-                            )}
-                            <span className="text-sm text-gray-500 dark:text-gray-400">
-                              {t.verse.verse} {randomVerse.verse.verse_number}
-                            </span>
-                          </div>
+                              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                            >
+                              {isPlaying && currentAudioId === randomVerse.verse.id ? (
+                                <Pause className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                              ) : (
+                                <Volume2 className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                              )}
+                            </button>
+                          )}
+                          <span className="text-sm text-gray-500 dark:text-gray-400">
+                            {t.verse.verse} {randomVerse.verse.verse_number}
+                          </span>
                         </div>
-                        <p className="text-2xl leading-relaxed text-right font-arabic" dir="rtl">
-                          {randomVerse.verse.verse}
-                        </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 italic">
-                          {language === 'en' ? randomVerse.verse.transcription_en : randomVerse.verse.transcription}
-                        </p>
-                        <p className="text-gray-900 dark:text-gray-100">
-                          {randomVerse.text}
-                        </p>
                       </div>
+                      <p className="text-2xl leading-relaxed text-right font-arabic" dir="rtl">
+                        {randomVerse.verse.verse}
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 italic">
+                        {language === 'en' ? randomVerse.verse.transcription_en : randomVerse.verse.transcription}
+                      </p>
+                      <p className="text-gray-900 dark:text-gray-100">
+                        {randomVerse.text}
+                      </p>
                     </div>
                   </div>
-                )}
+                </div>
+              )}
 
                 {/* Search Results */}
-                {searchResults.map((result) => (
-                  <button
-                    key={result.id}
-                    onClick={() => handleVerseClick(result.surah.id, result.verse.verse_number)}
+              {searchResults.map((result) => (
+                <button
+                  key={result.id}
+                  onClick={() => handleVerseClick(result.surah.id, result.verse.verse_number)}
                     className="w-full p-4 sm:p-6 text-left group hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-all duration-300"
-                  >
-                    <div className="flex items-start gap-4">
-                      <div className="bg-gradient-to-br from-emerald-500/10 to-teal-500/10 dark:from-emerald-500/20 dark:to-teal-500/20 p-3 rounded-xl flex-shrink-0">
-                        <Book className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                      </div>
-                      <div className="flex-1 space-y-2">
-                        <div className="flex items-center justify-between flex-wrap gap-2">
-                          <h3 className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
-                            {result.surah.name_en} ({result.surah.name})
-                          </h3>
-                          <div className="flex items-center gap-2">
-                            {result.surah.audio && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleAudioPlay(
-                                    language === 'en' ? result.surah.audio!.mp3_en : result.surah.audio!.mp3,
-                                    result.verse.id
-                                  );
-                                }}
-                                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                              >
-                                {isPlaying && currentAudioId === result.verse.id ? (
-                                  <Pause className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                                ) : (
-                                  <Volume2 className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                                )}
-                              </button>
-                            )}
-                            <span className="text-sm text-gray-500 dark:text-gray-400">
-                              Verse {result.verse.verse_number}
-                            </span>
-                          </div>
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="bg-gradient-to-br from-emerald-500/10 to-teal-500/10 dark:from-emerald-500/20 dark:to-teal-500/20 p-3 rounded-xl flex-shrink-0">
+                      <Book className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                    </div>
+                    <div className="flex-1 space-y-2">
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <h3 className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                          {result.surah.name_en} ({result.surah.name})
+                        </h3>
+                        <div className="flex items-center gap-2">
+                          {result.surah.audio && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleAudioPlay(
+                                  language === 'en' ? result.surah.audio!.mp3_en : result.surah.audio!.mp3,
+                                  result.verse.id
+                                );
+                              }}
+                              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                            >
+                              {isPlaying && currentAudioId === result.verse.id ? (
+                                <Pause className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                              ) : (
+                                <Volume2 className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                              )}
+                            </button>
+                          )}
+                          <span className="text-sm text-gray-500 dark:text-gray-400">
+                            Verse {result.verse.verse_number}
+                          </span>
                         </div>
-                        <p className="text-2xl leading-relaxed text-right font-arabic" dir="rtl">
-                          {result.verse.verse}
-                        </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 italic">
-                          {language === 'en' ? result.verse.transcription_en : result.verse.transcription}
-                        </p>
+                      </div>
+                      <p className="text-2xl leading-relaxed text-right font-arabic" dir="rtl">
+                        {result.verse.verse}
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 italic">
+                        {language === 'en' ? result.verse.transcription_en : result.verse.transcription}
+                      </p>
                         <p className="text-gray-900 dark:text-gray-100">
                           {result._formatted ? (
                             <HighlightedText text={result._formatted.text} />
@@ -296,11 +296,11 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
                           )}
                         </p>
                       </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
           </div>
 
           {/* Footer */}
