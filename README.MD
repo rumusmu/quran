@@ -17,7 +17,11 @@
     <a href="#contributing">Contributing</a>
   </div>
 </div>
+
+
 [![Netlify Status](https://api.netlify.com/api/v1/badges/63b0ad75-22c0-4146-8066-821323f7c120/deploy-status)](https://app.netlify.com/sites/rumusmu-app/deploys)
+
+
 ## ✨ Features
 
 🔍 **Advanced Search**
